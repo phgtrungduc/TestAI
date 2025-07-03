@@ -75,10 +75,13 @@ Chuyển hướng đến `original_url` tương ứng với `short_code`.
 | `created_at`  | TIMESTAMP    | Ngày tạo bản ghi                   |
 | `visit_count` | INTEGER      | (Tuỳ chọn) Đếm số lần truy cập     |
 
-### 🔸 Ràng buộc & chỉ mục
-- `UNIQUE(short_code)`
-- `INDEX(created_at)`
-- (Tuỳ chọn) `CHECK(original_url LIKE 'http%')`
+### 🔸 Ràng buộc & chỉ mục (Indexing)
+
+| Trường         | Index kiểu gì     | Ghi chú                                  |
+|----------------|-------------------|------------------------------------------|
+| `short_code`   | `UNIQUE INDEX`    | ⚠️ Bắt buộc — để redirect nhanh chóng    |
+| `original_url` | `INDEX` (tuỳ chọn)| ✔ Nếu muốn tránh tạo trùng URL           |
+| `created_at`   | `INDEX` (tuỳ chọn)| ✔ Nếu có dashboard, lọc hoặc xoá theo thời gian |
 
 ---
 
@@ -139,8 +142,9 @@ GET /yt89pQ
   - Hạn chế gửi quá nhiều request (rate limit)
 
 - **Hiệu năng**:
+  - Index `short_code` là bắt buộc
+  - Index `created_at`, `original_url` nếu có nhu cầu truy vấn thêm
   - Cache kết quả truy vấn `short_code`
-  - Index các trường truy vấn
   - Scale: tách đọc/ghi DB nếu lớn
 
 ---
